@@ -2,9 +2,37 @@ import React, { useContext, useReducer, useRef, useState } from 'react'
 import { Button, Container, Heading, Flex, NavLink, Input, Label, Checkbox } from 'theme-ui'
 import { Link } from "gatsby"
 import { IdentityContext } from "./../../netlifyIdentityContext"
+import { gql, useMutation, useQuery } from '@apollo/client'
+
+const ADD_TODO = gql`
+    mutation AddTodo($type: String!){
+        addTodo(text: "one todo"){
+            id
+        }
+    }
+`
+const GET_TODOS = gql`
+    query GetTodos {
+        todos{
+            id
+            text
+            done
+          }
+    }
+`
+
+const UPDATE_TODO_DONE = gql`
+    mutation UpdateTodoDone($id: ID!){
+        updateTodoDone(id: $id) {
+            text
+            done
+        }
+    }
+
+`
 
 const todoReducer = (state, action) => {
-    switch(action.type) {
+    switch (action.type) {
         case "addTodo":
             return [{
                 done: false,
@@ -32,6 +60,9 @@ const Dashboard = () => {
     const inputRef = useRef()
     //const [todos, setTodos] = useState([])
     const [todos, dispatch] = useReducer(todoReducer, [])
+    const [addTodo] = useMutation(ADD_TODO)
+    const [updateTodoDone] = useMutation(UPDATE_TODO_DONE)
+    const { loading, error, data } = useQuery(GET_TODOS)
 
 
     return (
@@ -59,19 +90,16 @@ const Dashboard = () => {
                 onSubmit={
                     e => {
                         e.preventDefault();
-                    /*
-                        setTodos([{
-                            done: false,
-                            value: inputRef.current.value
-                        },
-                        ...todos
-                        ])
-                        */
-                       dispatch({
-                           type: "addTodo",
-                           payload: inputRef.current.value
+                        /*
+                            setTodos([{
+                                done: false,
+                                value: inputRef.current.value
+                            },
+                            ...todos
+                            ])
+                            */
+                        addTodo({ variables: { text: inputRef.current.value } })
 
-                       })
                         inputRef.current.value = "";
                     }
 
@@ -85,28 +113,33 @@ const Dashboard = () => {
 
             </Flex>
             <Flex sx={{ flexDirection: "column" }} >
-                <ul sx={{ listStyleType: 'none' }}  >
-                    {
-                        todos.map((todo, i) => (
-                            <Flex as="li" key={i} 
-                            onClick = {
-                                ()=>{
-                                    dispatch({
-                                        type: "toggleTodo",
-                                        payload: i
-                                    })
-                                }
-                            }
-                            
-                            >
-                                <Checkbox checked={todo.done} 
-                                readOnly
-                                />
-                                <span>{todo.value}</span>
-                            </Flex>
-                        ))
-                    }
-                </ul>
+                {loading ? <div>loading</div> : null}
+                {error ? <div>{error.message}</div> : null}
+                {!loading && !error && (
+                    <ul sx={{ listStyleType: 'none' }}  >
+                        {
+                            todos.map((todo) => (
+                                <Flex as="li"
+                                    onClick={
+                                        () => {
+                                            updateTodoDone({
+                                                variables: {id: todo.id}
+                                            })
+                                            
+                                        }
+                                    }
+
+                                >
+                                    <Checkbox checked={todo.done}
+                                        readOnly
+                                    />
+                                    <span>{todo.value}</span>
+                                </Flex>
+                            ))
+                        }
+                    </ul>)
+
+                }
 
 
             </Flex>

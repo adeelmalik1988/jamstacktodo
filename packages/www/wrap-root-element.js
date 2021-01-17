@@ -3,6 +3,8 @@ const { ThemeProvider } = require('theme-ui')
 const { deep, light } = require('@theme-ui/presets')
 const { Provider } = require("./netlifyIdentityContext")
 
+
+
 const newTheme = {
     ...deep,
     sizes: {
@@ -10,7 +12,10 @@ const newTheme = {
     }
 }
 
-module.exports = ({ element }) => (<Provider>
+
+
+module.exports = ({ element }) => (
+<Provider>
     <ThemeProvider theme={newTheme} >{element} </ThemeProvider>
 </Provider>
 );
