@@ -1,5 +1,5 @@
-import React, { useContext, useReducer, useRef, useState } from 'react'
-import { Button, Container, Heading, Flex, NavLink, Input, Label, Checkbox } from 'theme-ui'
+import React, { useContext, useReducer, useRef } from 'react'
+import { Button, Container, Flex, NavLink, Input, Label, Checkbox } from 'theme-ui'
 import { Link } from "gatsby"
 import { IdentityContext } from "./../../netlifyIdentityContext"
 import { gql, useMutation, useQuery } from '@apollo/client'
@@ -120,8 +120,7 @@ const Dashboard = () => {
                         {
                             todos.map((todo) => (
                                 <Flex as="li"
-                                    onClick={
-                                        () => {
+                                    onClick={() => {
                                             updateTodoDone({
                                                 variables: {id: todo.id}
                                             })

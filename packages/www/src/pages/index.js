@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { Button, Container, Heading, Flex, NavLink } from 'theme-ui'
-import netlifyIdentity from "netlify-identity-widget"
+
 import { Link } from "gatsby"
 import {IdentityContext} from "./../../netlifyIdentityContext"
 
