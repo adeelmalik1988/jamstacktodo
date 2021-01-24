@@ -1,7 +1,7 @@
 import React, { useContext, useReducer, useRef } from 'react'
 import { Button, Container, Flex, NavLink, Input, Label, Checkbox } from 'theme-ui'
 import { Link } from "gatsby"
-import { IdentityContext } from "./../../netlifyIdentityContext"
+import { IdentityContext } from "../../netlifyIdentityContext"
 import { gql, useMutation, useQuery } from '@apollo/client'
 
 const ADD_TODO = gql`
@@ -79,7 +79,7 @@ const Dashboard = () => {
 
                     </NavLink>
 
-                {user && (<NavLink as={Link} to="logout" p={2}
+                {user && (<NavLink as={Link} to="/app" p={2}
                     onClick={() => {
                         identity.logout()
                     }} >

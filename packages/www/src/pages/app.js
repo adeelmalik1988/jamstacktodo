@@ -1,8 +1,8 @@
 import React, { useContext } from "react"
-import { Router} from "@reach/router"
+import { Router } from "@reach/router"
 import { IdentityContext } from "../../netlifyIdentityContext";
 import { Button, Heading, Flex, Container } from 'theme-ui'
-import Dashboard from "./dashboard";
+import Dashboard from "../components/dashboard";
 
 /*
 
@@ -34,13 +34,11 @@ let Dash = () => {
 */
 let DashLoggedOut = props => {
     const { identity } = useContext(IdentityContext);
-    
+
 
 
     return (
         <Container>
-
-
             <Flex sx={{
                 flexDirection: "column",
                 padding: 3
@@ -55,14 +53,24 @@ let DashLoggedOut = props => {
 }
 
 export default props => {
+    const { user } = useContext(IdentityContext);
 
+    if (!user) {
+        return (
+            <Router>
+
+                <DashLoggedOut path="/app" />
+
+
+            </Router>
+        )
+    }
+    
     return (
+        
         <Router>
 
             <Dashboard path='/app' />
-
-            <DashLoggedOut path="/app/logout" />
-
 
         </Router>
     )

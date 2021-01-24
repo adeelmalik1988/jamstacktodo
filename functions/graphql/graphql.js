@@ -23,27 +23,42 @@ let todoIndex = 0;
 //Provide resolver function for your schema fields
 const resolvers = {
     Query: {
-        todos: ()=> Object.values(todos),
+        todos: (parent, args, { user }) => {
+            if (!user) {
+                return [];
+            } else {
+                return Object.values(todos)
+            }
+        },
     },
     Mutation: {
-        addTodo: (_, { text } ) => {
+        addTodo: (_, { text }) => {
             todoIndex++;
             const id = `key-${todoIndex}`;
             todos[id] = { id, text, done: false }
             return todos[id]
 
         },
-        updateTodoDone: (_, { id } ) => {
+        updateTodoDone: (_, { id }) => {
+
 
             todos[id].done = !todos[id].done;
             return todos[id]
         }
-    } 
+    }
 }
 
 const server = new ApolloServer({
     typeDefs,
     resolvers,
+    context: ({ context }) => {
+        if (context.clientContext.user) {
+            return { user: context.clientContext.user.sub }
+        } else {
+            return {};
+        }
+
+    },
 
     playground: true,
     introspection: true
