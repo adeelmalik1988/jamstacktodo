@@ -35,7 +35,7 @@ const resolvers = {
         },
         updateTodoDone: (_, { id } ) => {
 
-            todos[id].done = true;
+            todos[id].done = !todos[id].done;
             return todos[id]
         }
     } 

@@ -5,12 +5,12 @@ import { IdentityContext } from "./../../netlifyIdentityContext"
 import { gql, useMutation, useQuery } from '@apollo/client'
 
 const ADD_TODO = gql`
-    mutation AddTodo($type: String!){
-        addTodo(text: "one todo"){
+    mutation AddTodo($text: String!){
+        addTodo(text: $text){
             id
         }
     }
-`
+`;
 const GET_TODOS = gql`
     query GetTodos {
         todos{
@@ -19,7 +19,7 @@ const GET_TODOS = gql`
             done
           }
     }
-`
+`;
 
 const UPDATE_TODO_DONE = gql`
     mutation UpdateTodoDone($id: ID!){
@@ -29,7 +29,7 @@ const UPDATE_TODO_DONE = gql`
         }
     }
 
-`
+`;
 
 const todoReducer = (state, action) => {
     switch (action.type) {
@@ -59,10 +59,12 @@ const Dashboard = () => {
     const { user, identity } = useContext(IdentityContext)
     const inputRef = useRef()
     //const [todos, setTodos] = useState([])
-    const [todos, dispatch] = useReducer(todoReducer, [])
+    //const [todos, dispatch] = useReducer(todoReducer, [])
     const [addTodo] = useMutation(ADD_TODO)
     const [updateTodoDone] = useMutation(UPDATE_TODO_DONE)
-    const { loading, error, data } = useQuery(GET_TODOS)
+    const { loading, error, data, refetch } = useQuery(GET_TODOS)
+   
+
 
 
     return (
@@ -87,21 +89,20 @@ const Dashboard = () => {
             </Flex>
 
             <Flex as="form"
-                onSubmit={
-                    e => {
-                        e.preventDefault();
-                        /*
-                            setTodos([{
-                                done: false,
-                                value: inputRef.current.value
-                            },
-                            ...todos
-                            ])
-                            */
-                        addTodo({ variables: { text: inputRef.current.value } })
-
-                        inputRef.current.value = "";
-                    }
+                onSubmit={async e => {
+                    e.preventDefault();
+                    /*
+                        setTodos([{
+                            done: false,
+                            value: inputRef.current.value
+                        },
+                        ...todos
+                        ])
+                        */
+                    await addTodo({ variables: { text: inputRef.current.value } })
+                    inputRef.current.value = "";
+                    await refetch()
+                }
 
                 }
             >
@@ -118,21 +119,24 @@ const Dashboard = () => {
                 {!loading && !error && (
                     <ul sx={{ listStyleType: 'none' }}  >
                         {
-                            todos.map((todo) => (
+                            data.todos.map((todo) => (
                                 <Flex as="li"
-                                    onClick={() => {
-                                            updateTodoDone({
-                                                variables: {id: todo.id}
-                                            })
-                                            
-                                        }
+                                    key={todo.id}
+                                    onClick={async () => {
+                                        await updateTodoDone({
+                                            variables: { id: todo.id }
+                                        })
+                                        console.log("refetching")
+                                        await refetch()
+
+                                    }
                                     }
 
                                 >
                                     <Checkbox checked={todo.done}
                                         readOnly
                                     />
-                                    <span>{todo.value}</span>
+                                    <span>{todo.text}</span>
                                 </Flex>
                             ))
                         }
