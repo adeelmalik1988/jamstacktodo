@@ -1,3 +1,5 @@
 .cache
+.env
+.envrc
 public
 node_modules
