@@ -24,15 +24,15 @@ const q = faunadb.query;
             //         )
             //     )
 
-            // const results =  await client.query(
-            //     q.Paginate(q.Match(q.Index("todos_by_user"), "user-test" ))
-            // )
-            const results = await client.query(
-                q.Update(q.Ref(q.Collection("todos"), "288794814185472525"),{
-                    data: {
-                        done: true
-                    }
-                }))
+            const results =  await client.query(
+                q.Paginate(q.Match(q.Index("todos_by_user"), "user-test" ))
+            )
+            // const results = await client.query(
+            //     q.Update(q.Ref(q.Collection("todos"), "288794814185472525"),{
+            //         data: {
+            //             done: true
+            //         }
+            //     }))
             
 
 
